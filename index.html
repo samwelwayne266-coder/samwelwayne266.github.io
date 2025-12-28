@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wayne Core | Official Dashboard</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #020617; color: white; font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        .glass { background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); }
+        .btn-glow:hover { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); transform: translateY(-2px); }
+        @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .animate-slide { animation: slideIn 0.5s ease-out forwards; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div id="gate" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#020617]">
+        <div class="text-center p-8 max-w-sm w-full">
+            <h1 class="text-4xl font-black mb-8 tracking-tighter uppercase">Wayne <span class="text-indigo-500">Core</span></h1>
+            <input type="password" id="pass" placeholder="SECURITY_KEY" 
+                class="w-full bg-slate-900 border border-slate-800 p-4 rounded-xl text-center font-mono focus:border-indigo-500 outline-none transition-all mb-4 uppercase">
+            <button onclick="auth()" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase tracking-widest text-xs btn-glow transition-all">Authenticate</button>
+        </div>
+    </div>
+
+    <div id="hub" class="hidden max-w-6xl mx-auto px-6 py-12">
+        
+        <div class="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
+            <div class="flex items-center gap-4">
+                <img id="avatar" class="w-16 h-16 rounded-2xl border-2 border-indigo-500/50">
+                <div>
+                    <h2 class="text-2xl font-black tracking-tight">Wayne Core</h2>
+                    <p class="text-xs font-mono text-slate-500">samwelwayne266-coder</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-4 text-3xl text-slate-600">
+                <i class="devicon-html5-plain hover:text-orange-500 transition-colors"></i>
+                <i class="devicon-css3-plain hover:text-blue-500 transition-colors"></i>
+                <i class="devicon-javascript-plain hover:text-yellow-400 transition-colors"></i>
+                <i class="devicon-react-original hover:text-sky-400 transition-colors"></i>
+                <i class="devicon-github-original hover:text-white transition-colors"></i>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <div class="glass p-6 rounded-3xl text-center">
+                <p class="text-2xl font-black text-indigo-400" id="repos-val">0</p>
+                <p class="text-[9px] uppercase font-bold tracking-[0.2em] text-slate-500">Modules</p>
+            </div>
+            <div class="glass p-6 rounded-3xl text-center">
+                <p class="text-2xl font-black text-indigo-400" id="fans-val">0</p>
+                <p class="text-[9px] uppercase font-bold tracking-[0.2em] text-slate-500">Followers</p>
+            </div>
+            <div class="glass p-6 rounded-3xl text-center col-span-2">
+                <p class="text-2xl font-black text-green-400">ACTIVE</p>
+                <p class="text-[9px] uppercase font-bold tracking-[0.2em] text-slate-500">Deployment Status</p>
+            </div>
+        </div>
+
+        <div class="mb-10 flex justify-between items-end">
+            <h3 class="text-xs font-black uppercase tracking-[0.4em] text-slate-600">Repository Stream</h3>
+            <input type="text" id="find" oninput="search()" placeholder="FILTER_SYSTEM..." 
+                class="bg-slate-900/50 border border-slate-800 px-4 py-2 rounded-lg font-mono text-[10px] w-40 focus:border-indigo-500 outline-none">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="feed">
+            </div>
+
+        <div class="mt-20 glass p-8 rounded-[2rem] border-dashed border-slate-800 text-center">
+            <h4 class="font-black text-lg mb-2">Initialize Collaboration?</h4>
+            <p class="text-slate-500 text-sm mb-6">Wayne Core is currently open for high-level technical partnerships.</p>
+            <a href="mailto:your-email@example.com" class="inline-block bg-indigo-600 px-10 py-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] btn-glow transition-all">Send Transmission</a>
+        </div>
+    </div>
+
+    <script>
+        const CORE = { user: 'samwelwayne266-coder', key: 'WAYNE', data: [] };
+
+        function auth() {
+            if (document.getElementById('pass').value.toUpperCase() === CORE.key) {
+                document.getElementById('gate').style.display = 'none';
+                document.getElementById('hub').style.display = 'block';
+                load();
+            } else { alert("ACCESS_DENIED"); }
+        }
+
+        async function load() {
+            const [p, r] = await Promise.all([
+                fetch(`https://api.github.com/users/${CORE.user}`),
+                fetch(`https://api.github.com/users/${CORE.user}/repos?sort=updated&per_page=100`)
+            ]);
+            const profile = await p.json();
+            CORE.data = await r.json();
+            
+            document.getElementById('avatar').src = profile.avatar_url;
+            document.getElementById('repos-val').innerText = profile.public_repos;
+            document.getElementById('fans-val').innerText = profile.followers;
+            render(CORE.data);
+        }
+
+        function render(repos) {
+            document.getElementById('feed').innerHTML = repos.map(repo => `
+                <div class="glass p-6 rounded-[2rem] hover:bg-white/5 transition-all cursor-pointer group" onclick="window.open('${repo.html_url}')">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-[9px] font-mono text-indigo-400 font-bold bg-indigo-500/10 px-2 py-1 rounded tracking-tighter">${repo.language || 'JSON'}</span>
+                        <span class="text-[10px] text-slate-600">⭐ ${repo.stargazers_count}</span>
+                    </div>
+                    <h4 class="font-black text-white group-hover:text-indigo-400 transition-colors mb-2">${repo.name}</h4>
+                    <p class="text-slate-500 text-xs line-clamp-2 leading-relaxed">${repo.description || 'Optimized system architecture.'}</p>
+                </div>
+            `).join('');
+        }
+
+        function search() {
+            const q = document.getElementById('find').value.toLowerCase();
+            render(CORE.data.filter(r => r.name.toLowerCase().includes(q)));
+        }
+    </script>
+</body>
+</html>
