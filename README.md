@@ -24,20 +24,6 @@
   </p>
 </p> 
 
-
-<p align="center">
-  <img src="preview.PNG" alt="samwelwayne266-coder">
-</p>
-
-# HOW TO INSTALL
-1. clone or Download zip this repository
-2. if you download zip extract this file zip
-3. open chrome, brave or etc browser from chromium
-4. Go to developer tools , then turn on "developer mode"
-5. click button "Load unpacked", then search your location clone or location extract this repository
-6. tehn Select Folder in popup explorer window
-7. finish open youtube.com and look at youtube logo
-
-#
+---
 
 <p align="center">Copyright &copy; <a href="https://github.com/samwelwayne266-coder">Wayne Core</a></p>
