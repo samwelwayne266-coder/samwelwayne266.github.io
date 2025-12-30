@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
         body { background-color: #020617; color: white; font-family: 'Inter', sans-serif; }
         .font-mono { font-family: 'Fira Code', monospace; }
@@ -32,10 +32,13 @@
         
         <div class="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
             <div class="flex items-center gap-4">
-                <img id="avatar" class="w-16 h-16 rounded-2xl border-2 border-indigo-500/50">
+                <div class="relative">
+                    <img id="avatar" class="w-16 h-16 rounded-2xl border-2 border-indigo-500/50" src="https://github.com/samwelwayne266.png">
+                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-[#020617] rounded-full"></div>
+                </div>
                 <div>
                     <h2 class="text-2xl font-black tracking-tight">Wayne Core</h2>
-                    <p class="text-xs font-mono text-slate-500">samwelwayne266-coder</p>
+                    <p class="text-xs font-mono text-slate-500">samwelwayne266</p>
                 </div>
             </div>
             
@@ -50,11 +53,11 @@
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
             <div class="glass p-6 rounded-3xl text-center">
-                <p class="text-2xl font-black text-indigo-400" id="repos-val">0</p>
+                <p class="text-2xl font-black text-indigo-400" id="repos-val">--</p>
                 <p class="text-[9px] uppercase font-bold tracking-[0.2em] text-slate-500">Modules</p>
             </div>
             <div class="glass p-6 rounded-3xl text-center">
-                <p class="text-2xl font-black text-indigo-400" id="fans-val">0</p>
+                <p class="text-2xl font-black text-indigo-400" id="fans-val">--</p>
                 <p class="text-[9px] uppercase font-bold tracking-[0.2em] text-slate-500">Followers</p>
             </div>
             <div class="glass p-6 rounded-3xl text-center col-span-2">
@@ -66,60 +69,98 @@
         <div class="mb-10 flex justify-between items-end">
             <h3 class="text-xs font-black uppercase tracking-[0.4em] text-slate-600">Repository Stream</h3>
             <input type="text" id="find" oninput="search()" placeholder="FILTER_SYSTEM..." 
-                class="bg-slate-900/50 border border-slate-800 px-4 py-2 rounded-lg font-mono text-[10px] w-40 focus:border-indigo-500 outline-none">
+                class="bg-slate-900/50 border border-slate-800 px-4 py-2 rounded-lg font-mono text-[10px] w-40 focus:border-indigo-500 outline-none text-white">
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="feed">
-            </div>
+            <p class="text-slate-500 font-mono text-xs col-span-full animate-pulse">Establishing uplink to GitHub API...</p>
+        </div>
 
         <div class="mt-20 glass p-8 rounded-[2rem] border-dashed border-slate-800 text-center">
             <h4 class="font-black text-lg mb-2">Initialize Collaboration?</h4>
             <p class="text-slate-500 text-sm mb-6">Wayne Core is currently open for high-level technical partnerships.</p>
-            <a href="mailto:your-email@example.com" class="inline-block bg-indigo-600 px-10 py-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] btn-glow transition-all">Send Transmission</a>
+            <a href="mailto:samwelwayne266@gmail.com" class="inline-block bg-indigo-600 px-10 py-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] btn-glow transition-all">Send Transmission</a>
         </div>
     </div>
 
     <script>
-        const CORE = { user: 'samwelwayne266-coder', key: 'WAYNE', data: [] };
+        // Use the username from your GitHub Context
+        const CORE = { user: 'samwelwayne266', key: 'WAYNE', data: [] };
 
         function auth() {
-            if (document.getElementById('pass').value.toUpperCase() === CORE.key) {
-                document.getElementById('gate').style.display = 'none';
-                document.getElementById('hub').style.display = 'block';
+            const input = document.getElementById('pass').value.toUpperCase();
+            if (input === CORE.key) {
+                document.getElementById('gate').classList.add('hidden');
+                document.getElementById('hub').classList.remove('hidden');
                 load();
-            } else { alert("ACCESS_DENIED"); }
+            } else { 
+                alert("ACCESS_DENIED: Invalid Security Key"); 
+            }
         }
 
         async function load() {
-            const [p, r] = await Promise.all([
-                fetch(`https://api.github.com/users/${CORE.user}`),
-                fetch(`https://api.github.com/users/${CORE.user}/repos?sort=updated&per_page=100`)
-            ]);
-            const profile = await p.json();
-            CORE.data = await r.json();
-            
-            document.getElementById('avatar').src = profile.avatar_url;
-            document.getElementById('repos-val').innerText = profile.public_repos;
-            document.getElementById('fans-val').innerText = profile.followers;
-            render(CORE.data);
+            try {
+                // Fetch User Profile and Repositories separately to handle individual failures
+                const profileRes = await fetch(`https://api.github.com/users/${CORE.user}`);
+                if (profileRes.ok) {
+                    const profile = await profileRes.json();
+                    document.getElementById('avatar').src = profile.avatar_url;
+                    document.getElementById('repos-val').innerText = profile.public_repos;
+                    document.getElementById('fans-val').innerText = profile.followers;
+                }
+
+                const repoRes = await fetch(`https://api.github.com/users/${CORE.user}/repos?sort=updated&per_page=100`);
+                
+                if (repoRes.status === 403) {
+                    throw new Error("RATE_LIMIT_EXCEEDED");
+                }
+
+                const rawData = await repoRes.json();
+                
+                // Final safety check: Ensure the response is actually an array
+                if (Array.isArray(rawData)) {
+                    CORE.data = rawData;
+                    render(CORE.data);
+                } else {
+                    throw new Error("INVALID_DATA_FORMAT");
+                }
+
+            } catch (error) {
+                console.error("System Error:", error);
+                document.getElementById('feed').innerHTML = `
+                    <div class="col-span-full p-6 glass rounded-2xl border-red-500/30 text-center">
+                        <p class="text-red-400 font-bold mb-2">UPLINK_FAILURE: ${error.message}</p>
+                        <p class="text-slate-500 text-xs">GitHub API rate limit reached. Please try again in 60 minutes or check the console.</p>
+                    </div>`;
+            }
         }
 
         function render(repos) {
-            document.getElementById('feed').innerHTML = repos.map(repo => `
+            const feed = document.getElementById('feed');
+            if (repos.length === 0) {
+                feed.innerHTML = `<p class="text-slate-600 text-xs col-span-full italic">No matching modules found in current stream.</p>`;
+                return;
+            }
+
+            feed.innerHTML = repos.map(repo => `
                 <div class="glass p-6 rounded-[2rem] hover:bg-white/5 transition-all cursor-pointer group" onclick="window.open('${repo.html_url}')">
                     <div class="flex justify-between items-center mb-4">
-                        <span class="text-[9px] font-mono text-indigo-400 font-bold bg-indigo-500/10 px-2 py-1 rounded tracking-tighter">${repo.language || 'JSON'}</span>
-                        <span class="text-[10px] text-slate-600">⭐ ${repo.stargazers_count}</span>
+                        <span class="text-[9px] font-mono text-indigo-400 font-bold bg-indigo-500/10 px-2 py-1 rounded tracking-tighter">${repo.language || 'DATA'}</span>
+                        <span class="text-[10px] text-slate-600 font-bold">⭐ ${repo.stargazers_count}</span>
                     </div>
-                    <h4 class="font-black text-white group-hover:text-indigo-400 transition-colors mb-2">${repo.name}</h4>
-                    <p class="text-slate-500 text-xs line-clamp-2 leading-relaxed">${repo.description || 'Optimized system architecture.'}</p>
+                    <h4 class="font-black text-white group-hover:text-indigo-400 transition-colors mb-2 truncate">${repo.name}</h4>
+                    <p class="text-slate-500 text-xs line-clamp-2 leading-relaxed">${repo.description || 'System module for Wayne Core architecture.'}</p>
                 </div>
             `).join('');
         }
 
         function search() {
             const q = document.getElementById('find').value.toLowerCase();
-            render(CORE.data.filter(r => r.name.toLowerCase().includes(q)));
+            const filtered = CORE.data.filter(r => 
+                (r.name && r.name.toLowerCase().includes(q)) || 
+                (r.description && r.description.toLowerCase().includes(q))
+            );
+            render(filtered);
         }
     </script>
 </body>
