@@ -33,12 +33,12 @@
         <div class="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
             <div class="flex items-center gap-4">
                 <div class="relative">
-                    <img id="avatar" class="w-16 h-16 rounded-2xl border-2 border-indigo-500/50" src="https://github.com/samwelwayne266.png">
+                    <img id="avatar" class="w-16 h-16 rounded-2xl border-2 border-indigo-500/50" src="https://github.com/samwelwayne266-coder.png">
                     <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-[#020617] rounded-full"></div>
                 </div>
                 <div>
                     <h2 class="text-2xl font-black tracking-tight">Wayne Core</h2>
-                    <p class="text-xs font-mono text-slate-500">samwelwayne266</p>
+                    <p class="text-xs font-mono text-slate-500">samwelwayne266-coder</p>
                 </div>
             </div>
             
@@ -84,23 +84,22 @@
     </div>
 
     <script>
-        // Use the username from your GitHub Context
-        const CORE = { user: 'samwelwayne266', key: 'WAYNE', data: [] };
+        const CORE = { user: 'samwelwayne266-coder', key: 'WAYNE', data: [] };
 
         function auth() {
             const input = document.getElementById('pass').value.toUpperCase();
             if (input === CORE.key) {
-                document.getElementById('gate').classList.add('hidden');
-                document.getElementById('hub').classList.remove('hidden');
+                document.getElementById('gate').style.display = 'none';
+                document.getElementById('hub').style.display = 'block';
                 load();
             } else { 
-                alert("ACCESS_DENIED: Invalid Security Key"); 
+                alert("ACCESS_DENIED: Critical Security Violation"); 
             }
         }
 
         async function load() {
             try {
-                // Fetch User Profile and Repositories separately to handle individual failures
+                // Fetch Profile
                 const profileRes = await fetch(`https://api.github.com/users/${CORE.user}`);
                 if (profileRes.ok) {
                     const profile = await profileRes.json();
@@ -109,28 +108,30 @@
                     document.getElementById('fans-val').innerText = profile.followers;
                 }
 
+                // Fetch Repos with explicit error handling for the 403 issue
                 const repoRes = await fetch(`https://api.github.com/users/${CORE.user}/repos?sort=updated&per_page=100`);
                 
-                if (repoRes.status === 403) {
-                    throw new Error("RATE_LIMIT_EXCEEDED");
+                if (!repoRes.ok) {
+                    const errorData = await repoRes.json();
+                    throw new Error(errorData.message || 'API_UPLINK_ERROR');
                 }
 
                 const rawData = await repoRes.json();
                 
-                // Final safety check: Ensure the response is actually an array
                 if (Array.isArray(rawData)) {
                     CORE.data = rawData;
                     render(CORE.data);
                 } else {
-                    throw new Error("INVALID_DATA_FORMAT");
+                    throw new Error("MALFORMED_DATA_STREAM");
                 }
 
             } catch (error) {
                 console.error("System Error:", error);
                 document.getElementById('feed').innerHTML = `
-                    <div class="col-span-full p-6 glass rounded-2xl border-red-500/30 text-center">
-                        <p class="text-red-400 font-bold mb-2">UPLINK_FAILURE: ${error.message}</p>
-                        <p class="text-slate-500 text-xs">GitHub API rate limit reached. Please try again in 60 minutes or check the console.</p>
+                    <div class="col-span-full p-8 glass rounded-3xl border-red-500/20 text-center">
+                        <div class="text-red-500 text-4xl mb-4"><i class="fas fa-shield-virus"></i></div>
+                        <p class="text-red-400 font-black text-sm mb-1 uppercase tracking-widest">Uplink Blocked</p>
+                        <p class="text-slate-500 text-xs font-mono">${error.message === 'API_UPLINK_ERROR' ? 'GitHub Rate Limit reached. Standby for 60m.' : error.message}</p>
                     </div>`;
             }
         }
@@ -138,7 +139,7 @@
         function render(repos) {
             const feed = document.getElementById('feed');
             if (repos.length === 0) {
-                feed.innerHTML = `<p class="text-slate-600 text-xs col-span-full italic">No matching modules found in current stream.</p>`;
+                feed.innerHTML = `<p class="text-slate-600 text-xs col-span-full italic text-center py-10">No modules active in this sector.</p>`;
                 return;
             }
 
@@ -149,7 +150,7 @@
                         <span class="text-[10px] text-slate-600 font-bold">⭐ ${repo.stargazers_count}</span>
                     </div>
                     <h4 class="font-black text-white group-hover:text-indigo-400 transition-colors mb-2 truncate">${repo.name}</h4>
-                    <p class="text-slate-500 text-xs line-clamp-2 leading-relaxed">${repo.description || 'System module for Wayne Core architecture.'}</p>
+                    <p class="text-slate-500 text-xs line-clamp-2 leading-relaxed">${repo.description || 'Secure system architecture module.'}</p>
                 </div>
             `).join('');
         }
@@ -163,5 +164,6 @@
             render(filtered);
         }
     </script>
+    <script src="https://kit.fontawesome.com/your-font-awesome-key.js" crossorigin="anonymous"></script>
 </body>
 </html>
