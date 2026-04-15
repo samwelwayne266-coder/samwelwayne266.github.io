@@ -4,7 +4,7 @@
     <a href="https://github.com/samwelwayne266-coder">
         <img src="https://img.shields.io/badge/-Github-black.svg?style=for-the-badge&logo=github&colorB=555" alt="samwelwayne266-coder" width="100px" height="30px">
     </a>
-    <a href="https://www.instagram.com/justmewayneee/">
+    <a href="https://www.instagram.com/itiswayneee/">
         <img src="https://img.shields.io/badge/Instagram-black.svg?style=for-the-badge&logo=instagram&colorB=555" alt="samwelwayne266-coder" width="100px" height="30px">
     </a>
     <a href="https://wa.me/6289653909054?text=hai,%20anubis">
@@ -15,8 +15,8 @@
 <!-- PROFILE -->
 <br />
 <p align="center">
-  <a href="https://github.com/samwelwayne266-coder">
-    <img src="https://github.com/samwelwayne266-coder.png?size=250" alt="samwelwayne266-coder" width="250px">
+  <a href="https://github.com/itiswayneee">
+    <img src="https://github.com/itiswayneee.png?size=250" alt="samwelwayne266-coder" width="250px">
   </a>
   <h3 align="center">samwelwayne266-coder</h3>
   <p align="center">
